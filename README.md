@@ -1,13 +1,13 @@
 # Bedrock-Agent-on-ECS - CDK-Deployment
 ---
+
+## Purpose
+
 **Deploy Bedrock AgentCore application to AWS ECS Fargate using AWS CDK python. The agent uses default (claude) model and is accessible via ALB.**
 
 ---
 
-## Purpose
-
-This project guides how to deploy a Bedrock agentcore application to AWS ECS Fargate service using AWS CDK (python). 
-
+**Key features**
 
 - 🚀 Single command deployment (`cdk deploy`)
 - 🤖 AI agent powered by Amazon Bedrock (Claude)
@@ -113,4 +113,7 @@ cdk destroy
 - Add https
 - vertical scaling
 - Custom domain
-- Alarms
+- Add tools
+- monitoring
+- CI/CD
+- Multi-environment
