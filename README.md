@@ -1,58 +1,122 @@
+# Bedrock-Agent-on-ECS - CDK-Deployment
+---
+**Deploy Bedrock AgentCore application to AWS ECS Fargate using AWS CDK python. The agent uses default (claude) model and is accessible via ALB.**
 
-# Welcome to your CDK Python project!
+---
 
-This is a blank project for CDK development with Python.
+## Purpose
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+This project guides how to deploy a Bedrock agentcore application to AWS ECS Fargate service using AWS CDK (python). 
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
 
-To manually create a virtualenv on MacOS and Linux:
+- 🚀 Single command deployment (`cdk deploy`)
+- 🤖 AI agent powered by Amazon Bedrock (Claude)
+- 🐳 Containerized with Docker
+- ⚖️ Load balanced with Application Load Balancer
+- 📊 CloudWatch logging for monitoring
+- 🔒 IAM roles with least privilege
+- 🏗️ IaC with AWS CDK
 
-```
-$ python3 -m venv .venv
-```
+## Design
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+![sd](pics/bedrock-agent-with-ecs.png)
 
-```
-$ source .venv/bin/activate
-```
+---
 
-If you are a Windows platform, you would activate the virtualenv like this:
+## Architecture
 
 ```
-% .venv\Scripts\activate.bat
+User Request (HTTP POST)
+    ↓
+Application Load Balancer (Port 80)
+    ↓
+ECS Fargate Service (Port 8080)
+    ↓
+Agent Container (/invocations endpoint)
+    ↓
+Amazon Bedrock (Claude Model)
 ```
 
-Once the virtualenv is activated, you can install the required dependencies.
+---
 
+## Prerequisites
+
+- AWS Account with CLI configured
+- AWS CDK CLI installed (`npm install -g aws-cdk`)
+- Docker installed and running
+- Python 3.11+
+- [CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting-started.html)
+
+---
+
+### 1. Clone and Setup
+
+```bash
+# Navigate to project
+cd Bedrock-Agent-on-ECS-CDK-Deployment
+# Install CDK dependencies
+cd cdk
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 ```
-$ pip install -r requirements.txt
+
+### 2. Bootstrap CDK (First Time Only)
+
+```bash
+cdk bootstrap
 ```
 
-At this point you can now synthesize the CloudFormation template for this code.
+### 3. Deploy
 
+```bash
+cdk deploy
 ```
-$ cdk synth
+
+**Deployment takes 5-10 minutes.** CDK will:
+- Build Docker image from `agent/` directory
+- Push image to ECR
+- Create VPC, ECS, ALB, SG, IAM roles
+- Deploy container to Fargate
+- Output the ALB URL (for invoking)
+
+### 4. Test Your Agent
+
+```bash
+# Get ALB URL from CDK output
+export ALB_URL="<your-alb-url-from-output>"
+
+# Test the agent
+curl -X POST http://$ALB_URL/invocations \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Hello"}'
 ```
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+**Expected Response:**
+```json
+{
+  "result": {
+    "role": "assistant",
+    "content": [
+      {
+        "text": "Hello! How can I assist you today?"
+      }
+    ]
+  }
+}
+```
 
-## Useful commands
+---
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+## Cleanup
 
-Enjoy!
+```bash
+cd cdk
+cdk destroy
+```
+
+### future work
+- Add https
+- vertical scaling
+- Custom domain
+- Alarms
