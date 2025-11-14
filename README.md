@@ -28,7 +28,7 @@ This project guides how to deploy a Bedrock agentcore application to AWS ECS Far
 ```
 User Request (HTTP POST)
     ↓
-Application Load Balancer (Port 80)
+Application Load Balancer
     ↓
 ECS Fargate Service (Port 8080)
     ↓
@@ -61,13 +61,7 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Bootstrap CDK (First Time Only)
-
-```bash
-cdk bootstrap
-```
-
-### 3. Deploy
+### 2. Deploy
 
 ```bash
 cdk deploy
@@ -80,7 +74,7 @@ cdk deploy
 - Deploy container to Fargate
 - Output the ALB URL (for invoking)
 
-### 4. Test Your Agent
+### 3. Test Your Agent
 
 ```bash
 # Get ALB URL from CDK output
@@ -108,14 +102,14 @@ curl -X POST http://$ALB_URL/invocations \
 
 ---
 
-## Cleanup
+## 4. Cleanup
 
 ```bash
 cd cdk
 cdk destroy
 ```
 
-### future work
+### 5. future work
 - Add https
 - vertical scaling
 - Custom domain
